@@ -1,0 +1,69 @@
+import tkinter as tk
+
+class GobangGame(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Five in a row")
+        self.geometry("600x600")
+        self.cell_size = 30  # Size of each cell
+        self.board_size = 15  # Size of the board
+        self.board = [[0] * self.board_size for _ in range(self.board_size)]  # 0: available
+        self.current_player = 1  # 1: black, 2: white
+        self.canvas = tk.Canvas(self, width=self.board_size * self.cell_size, height=self.board_size * self.cell_size, bg="burlywood")
+        self.canvas.pack()
+        self.canvas.bind("<Button-1>", self.place_piece)
+        self.draw_board()
+
+    def draw_board(self):
+        for i in range(self.board_size):
+            self.canvas.create_line(0, i * self.cell_size, self.board_size * self.cell_size, i * self.cell_size)
+            self.canvas.create_line(i * self.cell_size, 0, i * self.cell_size, self.board_size * self.cell_size)
+
+    def place_piece(self, event):
+        # Get click coordinates
+        col = event.x // self.cell_size
+        row = event.y // self.cell_size
+
+        if self.board[row][col] == 0:  # if available
+            # record the check
+            self.board[row][col] = self.current_player
+            # draw the check
+            x1 = col * self.cell_size + 5
+            y1 = row * self.cell_size + 5
+            x2 = (col + 1) * self.cell_size - 5
+            y2 = (row + 1) * self.cell_size - 5
+            color = "black" if self.current_player == 1 else "white"
+            self.canvas.create_oval(x1, y1, x2, y2, fill=color)
+            # check if someone win
+            if self.check_winner(row, col):
+                winner = "Black" if self.current_player == 1 else "White"
+                self.show_winner(winner)
+                return
+            # another player's turn
+            self.current_player = 3 - self.current_player
+
+    def check_winner(self, row, col):
+        directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  
+        for dr, dc in directions:
+            count = 1
+            r, c = row + dr, col + dc
+            while 0 <= r < self.board_size and 0 <= c < self.board_size and self.board[r][c] == self.current_player:
+                count += 1
+                r += dr
+                c += dc
+            r, c = row - dr, col - dc
+            while 0 <= r < self.board_size and 0 <= c < self.board_size and self.board[r][c] == self.current_player:
+                count += 1
+                r -= dr
+                c -= dc
+            if count >= 5:
+                return True
+        return False
+
+    def show_winner(self, winner):
+        self.canvas.unbind("<Button-1>")
+        self.canvas.create_text(self.board_size * self.cell_size // 2, self.board_size * self.cell_size // 2, text=f"{winner} win!", font=("Arial", 30), fill="red")
+
+if __name__ == "__main__":
+    game = GobangGame()
+    game.mainloop()
