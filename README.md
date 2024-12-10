@@ -2,6 +2,8 @@
 A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is displayed with special function including changeable username, undo options, score recording, and a visual interface.
 ## Features
 
+**Rule Reading Selection**: Players can choose whether skip the rule reading.
+
 **Customizable Player Names**: Personalize the game experience.
 
 **Customizable black and white pieces player**: Two ways to distribute the black and white parties.
