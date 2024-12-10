@@ -31,6 +31,7 @@ import random
 ## Main
 
 The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the GUI for the game.
+
 class GomokuGame(tk.Tk):
     def ...
 
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 ### GUI settings
 
 #### Initialize the game setting
+
 def __init__(self):
 
         super().__init__()
