@@ -80,6 +80,7 @@ Minegomoku/
 >src/                     # Source code
 >
 >> Pre-requirements
+>> 
 >> main.py                # Main game file containing the gameplay logic
 >> 
 >>>GUI settings(): Initialized the game settings, including welcome page, rule page, game setting page, winner/draw page, and ending page
@@ -88,29 +89,39 @@ Minegomoku/
 >>>>
 >>>>show_rules_screen(): Displays the game rules.
 >>>>
->>>>show_username_input_screen(): Displays settings for username input, player assignment, and mine customization.
+>>>>show_username_input_screen(): Displays settings for username input, player assignment mode selection, and mine customization.c
 >>>>
 >>>>show_player_assignment_result(): Displays the assigned player roles (Black/White).
 >>>>
->>>> Ending_page(): Displays the ending page with final scores and options to restart or quit.
+>>>>Gameover page:draw() & display_winner(): display game over and "draw" or "winner", show all the mines and steps in the board, and use a continue button to go to the Ending_page.
 >>>>
->>>> Others: continue_button()&clear_screen()
+>>>>Ending_page(): Displays the ending page with final scores and options to restart or quit.
+>>>>
+>>>>Others: continue_button()&clear_screen()
 >>>
->>>Game Screen:
+>>>Gamesetting Screen（show_username_input_screen()） supported by the logic function:
+>>> 
+>>>> hide_black_player_choice(): Hides the black player choice frame when choosing "Random".
+>>>> 
+>>>> show_black_player_choice(): Shows the black player choice frame when choosing "Custom".
+>>>> 
+>>>> assign_players_and_mines(): Assign players to black and white pieces based on user input or random distribution and distribute the mines in the board and make sure there are at least a row that consists of 5 consective blank cell. set_disabled_cells() & five_consecutive_empty_spaces_exist() & count_consecutive_empty.
+>>>> 
+>>>Playingboard Screen and logic function:
 >>>
 >>>>start_game(): Initializes the game screen, resets states, and sets up the board.
 >>>>
 >>>>draw_board(): Draws the grid lines of the board.
 >>>>
->>>>place_piece(): Handles piece placement, record the current steps and updates the game state.
+>>>>place_piece(): Handles piece placement, record the current steps and updates the game state (check winner for each placing). --count_in_one_direction() & check_winner()
 >>>>
->>>>undo_botton: deletes the last 2 steps and offers opportunity to replace the pieces. Include undo_move()&update_undo_button()
+>>>>undo_botton: deletes the last 2 steps and offers opportunity to replace the pieces. --undo_move()&update_undo_button()
 >>>>
 >>>>redraw_board(): Redraws the board based on the current game state.
 >>>>
->>>>update timer: Display the decrease in time for current player. update_timer(): Decreases the timer and checks for timeouts & update_timer_label(): display the current player's name
+>>>>update timer: Display the decrease in time for current player. --update_timer(): Decreases the timer and checks for timeouts & update_timer_label(): display the current player's name
 >>>>
->>>>draw_button: Draw the game quickly without winners and display a gameover page and reproduce the board. draw()
+>>>>draw_button: Draw the game quickly without winners and display a gameover page and reproduce the board. --draw()
 >>>>
 >>>Game Over and Winner Display():
 >>>
@@ -193,7 +204,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         None
         '''
 
-#### Username input and mode selection page (Page 2)
+#### Game setting page (Page 2)
     def show_username_input_screen(self):
         '''
         **Function**
@@ -206,16 +217,71 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
-
-#### Player assignment result page (Page 3)
-    def assign_players(self, player1, player2):
+  Game setting logic:
+  
+   def assign_players_and_mines(self, player1, player2, num_of_mines):
         '''
         **Function**
         Assign players to black and white pieces based on user input or random distribution.
+        distribute the mines in the board and make sure there are at least a row that consists of 5 consective blank cell.
 
         **Parameters**
         player1 (str): Name of Player 1.
         player2 (str): Name of Player 2.
+        num_of_mines (int): Number of disabled cells.
+
+        **Returns**
+        None
+        '''
+ def set_disabled_cells(self):
+        '''
+        **Function**
+        Randomly set the disabled cells on the board, ensuring there are at least 5 consecutive empty spaces available.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+def five_consecutive_empty_spaces_exist(self):
+        '''
+        **Function**
+        Check if there are at least 5 consecutive empty spaces in any row, column, or diagonal.
+
+        **Parameters**
+        None
+
+        **Returns**
+        bool: True if there are at least 5 consecutive empty spaces, False otherwise.
+        '''
+        
+def count_consecutive_empty(self, board, start_x, start_y, dx, dy, length):
+        '''
+        **Function**
+        Check if there are the required number of consecutive empty cells in a given direction.
+
+        **Parameters**
+        board (list of list): The board to check.
+        start_x (int): Starting x-coordinate.
+        start_y (int): Starting y-coordinate.
+        dx (int): Direction step for x.
+        dy (int): Direction step for y.
+        length (int): The number of consecutive empty cells required.
+
+        **Returns**
+        bool: True if the required number of consecutive empty cells exists, False otherwise.
+        '''
+        
+        
+#### Player assignment result display setting (Page 3)
+    def show_player_assignment_result(self):
+        '''
+        **Function**
+        Show the result of the player assignment.
+
+        **Parameters**
+        None
 
         **Returns**
         None
@@ -293,7 +359,8 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
-    def draw_button(self):
+    
+    def draw(self):
         '''
         **Function**
         Draw the game and go to the ending page.
