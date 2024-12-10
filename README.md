@@ -1,5 +1,5 @@
 # Gomoku Game
-A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is displayed with special function including changeable username, undo options, score recording, and a visual interface.
+An upgraded Gomoku (Five in a Row) game with mines in the board based on Python and Tkinter commands is displayed with special function including customizable game setting before starting the game, undo option and draw option while playing, and score recording, restart option, and quit option while gameover. This Mine-Gomoku game
 ## Features
 
 **Rule Reading Selection**: Players can choose whether skip the rule reading.
