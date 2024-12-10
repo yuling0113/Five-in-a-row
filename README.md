@@ -219,7 +219,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         '''
   Game setting logic:
   
-   def assign_players_and_mines(self, player1, player2, num_of_mines):
+    def assign_players_and_mines(self, player1, player2, num_of_mines):
         '''
         **Function**
         Assign players to black and white pieces based on user input or random distribution.
@@ -233,7 +233,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
- def set_disabled_cells(self):
+    def set_disabled_cells(self):
         '''
         **Function**
         Randomly set the disabled cells on the board, ensuring there are at least 5 consecutive empty spaces available.
@@ -244,7 +244,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
-def five_consecutive_empty_spaces_exist(self):
+    def five_consecutive_empty_spaces_exist(self):
         '''
         **Function**
         Check if there are at least 5 consecutive empty spaces in any row, column, or diagonal.
@@ -256,7 +256,7 @@ def five_consecutive_empty_spaces_exist(self):
         bool: True if there are at least 5 consecutive empty spaces, False otherwise.
         '''
         
-def count_consecutive_empty(self, board, start_x, start_y, dx, dy, length):
+    def count_consecutive_empty(self, board, start_x, start_y, dx, dy, length):
         '''
         **Function**
         Check if there are the required number of consecutive empty cells in a given direction.
@@ -334,7 +334,6 @@ def count_consecutive_empty(self, board, start_x, start_y, dx, dy, length):
         
         # Set the remaining time per turn
 
-    # Regret/Undo button
     def undo_move(self):
         '''
         **Function**
