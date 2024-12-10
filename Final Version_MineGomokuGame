@@ -211,6 +211,7 @@ class MineGomokuGame(tk.Tk):
         '''
         **Function**
         Assign players to black and white pieces based on user input or random distribution.
+        distribute the mines in the board and make sure there are at least a row that consists of 5 consective blank cell.
 
         **Parameters**
         player1 (str): Name of Player 1.
@@ -366,7 +367,7 @@ class MineGomokuGame(tk.Tk):
     def start_game(self):
         '''
         **Function**
-        Start the main game screen, resetting all game states and timers.
+        Start the main game screen, resetting all game states and timers, and regenerate disabled cells.
 
         **Parameters**
         None
@@ -378,6 +379,9 @@ class MineGomokuGame(tk.Tk):
         self.history = []
         self.black_undo_remaining = 2
         self.white_undo_remaining = 2
+
+        # Regenerate disabled cells
+        self.set_disabled_cells()
 
         # "Undo"
         self.undo_button = tk.Button(
