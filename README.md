@@ -51,11 +51,11 @@ The game will announce the winner once a player meets the win condition.
 gomoku/
 >src/                     # Source code
 >
->> main.py              # Main game file containing the gameplay logic
+>> main.py                # Main game file containing the gameplay logic
 >> 
 >>>GUI settings(): Initialized the game settings, including welcome page, rule page, mode selection and player assignment
 >>>
->>>game screen():       # Initialized the game settings
+>>>game screen(): Initialized the game settings
 >>>
 >>>>start_game(): Initializes the game screen, resets states, and sets up the board.
 >>>>
