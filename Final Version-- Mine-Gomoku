@@ -1,0 +1,815 @@
+import tkinter as tk
+import tkinter.messagebox as messagebox  # Import for showing error messages
+import random
+
+
+class MineGomokuGame(tk.Tk):
+    def __init__(self):
+
+        '''
+        
+        **Function**
+        Initialize the Gomoku game, set up the board, players, and welcome screen.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+
+        '''
+        super().__init__()
+        self.title("Gomoku Game")
+        self.geometry("600x650")
+        self.cell_size = 30
+        self.board_size = 15
+        self.board = [[0] * self.board_size for _ in range(self.board_size)]
+        self.current_player = 1
+        self.remaining_time = 30
+
+        # Initialize the player information
+        self.player_black = None
+        self.player_white = None
+        self.scores = {}  # Dictionary to store player scores
+
+        # Initialize the distribution mode
+        self.distribution_mode = tk.StringVar(value="random")  # Default: random
+        self.black_player_choice = tk.StringVar(value="player1")  # Default: Player 1
+        self.black_player_choice_frame = None  # Initialize the black choice frame status (showing/hiding)
+
+        # Initialze the mine setting (Disabled cells setup)
+        self.disabled_cells = set()  # Store coordinates of disabled cells
+        self.num_disabled_cells = 0  # Number of disabled cells
+
+        # Game history and Undo settings
+        self.history = []  # List to store move history [(x, y, player)]
+        self.black_undo_remaining = 2  # Black player's undo chances
+        self.white_undo_remaining = 2  # White player's undo chances
+
+        # Start with welcome screen
+        self.show_welcome_screen()
+
+    # Welcome screen display settings (Page 1)
+    def show_welcome_screen(self):
+        '''
+        **Function**
+        Display the welcome screen for the Gomoku game.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.clear_screen()
+        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightblue")
+        self.canvas.pack()
+        self.canvas.create_text(
+            300, 200, text="Welcome to Gomoku Game", font=("Arial", 24, "bold")
+        )
+
+        # Create button to go to rules page
+        Rules_button = tk.Button(self, text="How to play", font=("Arial", 16), bg="white", command=self.show_rules_screen)
+        self.canvas.create_window(300, 350, window=Rules_button)
+        
+        # Add continue button and set the next page
+        self.continue_button(command=self.show_username_input_screen)
+
+    # Rule Page display setting
+    def show_rules_screen(self):
+        '''
+        **Function**
+        Display how to play the game.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.clear_screen()
+        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
+        self.canvas.pack()
+        rules = """
+        Rules:
+        1. Black goes first, followed by White.
+        2. Players take turns placing a piece.
+        3. Each player has 30 seconds per turn.
+        4. The first player to place 5 consecutive pieces 
+           horizontally, vertically, or diagonally wins.
+        5. Each player has 2 undo chances per game.
+        6. Players can custom the number of mines ("X"), 
+           which would be randomly distributed and
+           would not display until the cell is clicked. 
+        7. Players cannot place pieces in cells containing mines.
+           
+        """
+        self.canvas.create_text(300, 200, text="How to Play", font=("Arial", 24, "bold"))
+        self.canvas.create_text(300, 350, text=rules, font=("Arial", 14), justify="left")
+        
+        # Add the continue button to the page.
+        self.continue_button(command=self.show_username_input_screen)
+
+    # Username input and black and white distribution mode choice (Page 2)
+    def show_username_input_screen(self):
+        '''
+        **Function**
+        Display the username input screen and game settings, including:
+        username input
+        black and white pieces player distrbution selection (Random/Custom)
+        Number of mines setup
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.clear_screen()
+        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightblue")
+        self.canvas.pack()
+
+        # Instructions
+        self.canvas.create_text(330, 100, text="Game Setting", font=("Arial", 24, "bold"))
+
+        # Player 1 name entry setting
+        tk.Label(self, text="Player 1:", font=("Arial", 16), bg="white").place(x=150, y=150)
+        player1_entry = tk.Entry(self, font=("Arial", 16))
+        player1_entry.place(x=250, y=150)
+
+        # Player 2 name entry setting
+        tk.Label(self, text="Player 2:", font=("Arial", 16)).place(x=150, y=200)
+        player2_entry = tk.Entry(self, font=("Arial", 16))
+        player2_entry.place(x=250, y=200)
+
+        # Distribution mode selection
+        tk.Label(self, text="Distribution Mode:", font=("Arial", 16)).place(x=100, y=250)
+        # "Random": use random function to distribute black and white, hide the black player choice frame
+        tk.Radiobutton(
+            self, text="Random", variable=self.distribution_mode, value="random", font=("Arial", 14),
+            command=self.hide_black_player_choice, bg="lightblue"
+        ).place(x=290, y=250)
+        # "Custom": custom the black and white by players, show the black player choice frame
+        tk.Radiobutton(
+            self, text="Custom", variable=self.distribution_mode, value="custom", font=("Arial", 14),
+            command=self.show_black_player_choice, bg="lightblue"
+        ).place(x=400, y=250)
+
+        # Black player choice (only for custom mode)
+        self.black_player_choice_frame = tk.Frame(self)
+        self.black_player_choice_frame.place(x=100, y=300)
+        tk.Label(self.black_player_choice_frame, text="Choose Black Player:", font=("Arial", 16)).pack(side="left")
+        tk.Radiobutton(
+            self.black_player_choice_frame, text="Player 1", variable=self.black_player_choice, value="player1", font=("Arial", 14)
+        ).pack(side="left")
+        tk.Radiobutton(
+            self.black_player_choice_frame, text="Player 2", variable=self.black_player_choice, value="player2", font=("Arial", 14)
+        ).pack(side="left")
+        self.hide_black_player_choice()  # Initially hide black choice
+
+        # Disabled cells input
+        tk.Label(self, text="Number of mines (Max:150):", font=("Arial", 16)).place(x=100, y=350)
+        num_of_mines_entry = tk.Entry(self, font=("Arial", 16), width=8)
+        num_of_mines_entry.place(x=380, y=350)
+
+        # Create Submit button
+        submit_button = tk.Button(
+            self, text="Submit", font=("Arial", 16),
+            command=lambda: self.assign_players_and_mines(player1_entry.get(), player2_entry.get(), num_of_mines_entry.get())
+        )
+        submit_button.place(x=250, y=450)
+
+    def hide_black_player_choice(self):
+        '''
+        **Function**
+        Hide the black player choice frame.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        if self.black_player_choice_frame:
+            self.black_player_choice_frame.place_forget()
+
+    def show_black_player_choice(self):
+        '''
+        **Function**
+        Show the black player choice frame.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        if self.black_player_choice_frame:
+            self.black_player_choice_frame.place(x=100, y=300)
+
+    def assign_players_and_mines(self, player1, player2, num_of_mines):
+        '''
+        **Function**
+        Assign players to black and white pieces based on user input or random distribution.
+
+        **Parameters**
+        player1 (str): Name of Player 1.
+        player2 (str): Name of Player 2.
+        num_of_mines (int): Number of disabled cells.
+
+        **Returns**
+        None
+        '''
+        # Validate player name entry is not blank
+        if not player1.strip() or not player2.strip():  # Check if player1 is empty or just whitespace
+            messagebox.showerror("Input Error", "Player name cannot be empty!")
+            return
+
+
+        # Mode--Random
+        if self.distribution_mode.get() == "random":
+            if random.choice([True, False]):
+                self.player_black, self.player_white = player1, player2
+            else:
+                self.player_black, self.player_white = player2, player1
+        
+        # Mode--Custom
+        elif self.distribution_mode.get() == "custom":
+            if self.black_player_choice.get() == "player1":
+                self.player_black, self.player_white = player1, player2
+            elif self.black_player_choice.get() == "player2":
+                self.player_black, self.player_white = player2, player1
+            else:
+                return
+
+        self.scores.setdefault(self.player_black, 0)
+        self.scores.setdefault(self.player_white, 0)
+
+         # Validate and set the number of mines(0-150)
+        try:
+            self.num_disabled_cells = int(num_of_mines)
+            if not (0 <= self.num_disabled_cells <= 150):
+               raise ValueError("Out of range")  # Force exception if out of range
+        except ValueError:
+            messagebox.showerror("Input Error", "Number of mines must be an integer between 0 and 150!")
+            return
+        
+        self.set_disabled_cells()
+
+        self.show_player_assignment_result()
+    
+    '''
+    def set_disabled_cells(self):
+        self.disabled_cells.clear()
+        while len(self.disabled_cells) < self.num_disabled_cells:
+            x = random.randint(0, self.board_size - 1)
+            y = random.randint(0, self.board_size - 1)
+            self.disabled_cells.add((x, y))
+
+    '''
+    def set_disabled_cells(self):
+        '''
+        **Function**
+        Randomly set the disabled cells on the board, ensuring there are at least 5 consecutive empty spaces available.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        while True:
+           self.disabled_cells.clear()
+
+        # Randomly assign disabled cells
+           while len(self.disabled_cells) < self.num_disabled_cells:
+            x = random.randint(0, self.board_size - 1)
+            y = random.randint(0, self.board_size - 1)
+            self.disabled_cells.add((x, y))
+
+           # Check if there are at least 5 consecutive empty spaces
+           if self.five_consecutive_empty_spaces_exist():
+            break  # If valid, exit the loop
+
+    def five_consecutive_empty_spaces_exist(self):
+        '''
+        **Function**
+        Check if there are at least 5 consecutive empty spaces in any row, column, or diagonal.
+
+        **Parameters**
+        None
+
+        **Returns**
+        bool: True if there are at least 5 consecutive empty spaces, False otherwise.
+        '''
+        # Create a temporary board with disabled cells marked
+        temp_board = [[0] * self.board_size for _ in range(self.board_size)]
+        for x, y in self.disabled_cells:
+          temp_board[y][x] = -1  # Mark disabled cells
+
+        # Directions: (dx, dy) for right, down, diagonal-right, diagonal-left
+        directions = [(1, 0), (0, 1), (1, 1), (1, -1)] 
+
+        # Check from every cell
+        for y in range(self.board_size):
+          for x in range(self.board_size):
+            if temp_board[y][x] == 0:  # Only check from empty cells
+                for dx, dy in directions:
+                    if self.count_consecutive_empty(temp_board, x, y, dx, dy, 5):
+                        return True
+
+        return False
+
+    def count_consecutive_empty(self, board, start_x, start_y, dx, dy, length):
+        '''
+        **Function**
+        Check if there are the required number of consecutive empty cells in a given direction.
+
+        **Parameters**
+        board (list of list): The board to check.
+        start_x (int): Starting x-coordinate.
+        start_y (int): Starting y-coordinate.
+        dx (int): Direction step for x.
+        dy (int): Direction step for y.
+        length (int): The number of consecutive empty cells required.
+
+        **Returns**
+        bool: True if the required number of consecutive empty cells exists, False otherwise.
+        '''
+        count = 0
+        x, y = start_x, start_y
+        while 0 <= x < self.board_size and 0 <= y < self.board_size:
+          if board[y][x] == 0:  # Empty cell
+            count += 1
+            if count >= length:
+                return True
+          else:
+            count = 0  # Reset count when encountering a disabled cell or piece
+          x += dx
+          y += dy
+        return False
+    
+    
+    # player assignment result display setting (Page 3)
+    def show_player_assignment_result(self):
+        '''
+        **Function**
+        Show the result of the player assignment.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.clear_screen()
+        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
+        self.canvas.pack()
+        Results = f"Black: {self.player_black}\nWhite: {self.player_white}"
+        self.canvas.create_text(300, 200, text="Player Distribution", font=("Arial", 24, "bold"))
+        self.canvas.create_text(300, 250, text=Results, font=("Arial", 20))
+        self.continue_button(command=self.start_game)
+
+    # Game playing screen (Page 4)
+    def start_game(self):
+        '''
+        **Function**
+        Start the main game screen, resetting all game states and timers.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.clear_screen()
+        self.history = []
+        self.black_undo_remaining = 2
+        self.white_undo_remaining = 2
+
+        # "Undo"
+        self.undo_button = tk.Button(
+            self, text="Undo", font=("Arial", 16), command=self.undo_move, bg="white"
+        )
+        self.undo_button.pack(pady=10)
+
+        # “Draw”
+        self.draw_button = tk.Button(
+            self, text="Draw", font=("Arial", 16), command=self.draw_button, bg="white"
+        )
+        self.draw_button.pack(pady=10)
+
+        self.timer_label = tk.Label(
+            self, text=f"Black's time left: {self.remaining_time}s", font=("Arial", 16)
+        )
+        self.timer_label.pack()
+
+        self.canvas = tk.Canvas(
+            self,
+            width=self.board_size * self.cell_size,
+            height=self.board_size * self.cell_size,
+            bg="burlywood",
+        )
+        self.canvas.pack()
+        self.canvas.bind("<Button-1>", self.place_piece)
+        self.draw_board()
+        self.update_timer()
+        self.update_undo_button()
+
+    def clear_screen(self):
+        '''
+        **Function**
+        Clear all widgets from the current screen.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        for widget in self.winfo_children():
+            widget.destroy()
+
+    def draw_board(self):
+        '''
+        **Function**
+        Draw the game board grid lines.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        for i in range(self.board_size):
+            self.canvas.create_line(
+                0, i * self.cell_size, self.board_size * self.cell_size, i * self.cell_size
+            )
+            self.canvas.create_line(
+                i * self.cell_size, 0, i * self.cell_size, self.board_size * self.cell_size
+            )
+
+    def place_piece(self, event):
+        '''
+        **Function**
+        Handle piece placement on the board when a player clicks.
+        Record the event in history dictionary.
+
+        **Parameters**
+        event (tkinter.Event): The mouse click event.
+
+        **Returns**
+        None
+        '''
+        x, y = event.x // self.cell_size, event.y // self.cell_size
+        if x >= self.board_size or y >= self.board_size or self.board[y][x] != 0:
+            return
+        
+        # Check if the cell is disabled
+        if (x, y) in self.disabled_cells:
+            self.canvas.create_text(
+                x * self.cell_size + self.cell_size // 2,
+                y * self.cell_size + self.cell_size // 2,
+                text="X",
+                font=("Arial", 16, "bold"),
+                fill="red"
+            )
+            self.remaining_time = 30  # Reset the timer
+            self.update_timer_label()
+            return
+
+        if self.board[y][x] != 0:
+            return
+
+        self.board[y][x] = self.current_player
+        color = "black" if self.current_player == 1 else "white"
+        self.canvas.create_oval(
+            x * self.cell_size + 5,
+            y * self.cell_size + 5,
+            (x + 1) * self.cell_size - 5,
+            (y + 1) * self.cell_size - 5,
+            fill=color,
+        )
+
+        # Record the history of player actions
+        self.history.append((x, y, self.current_player))
+
+        # Check if there are five pieces in a row every time
+        if self.check_winner(x, y):
+            winner = self.player_black if self.current_player == 1 else self.player_white
+            self.display_winner(f"Game Over! {winner} wins!")
+            return
+
+        # Swap the player
+        self.current_player = 3 - self.current_player
+        
+        # Set the remaining time per turn
+        self.remaining_time = 30
+        
+        self.update_timer_label()
+        self.update_undo_button()
+
+    # Regret/Undo button
+    def undo_move(self):
+        '''
+        **Function**
+        Undo the last two moves made by both players.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        # if there are not 2 steps in history, undo button cannot work
+        if len(self.history) < 2:
+           return
+
+        # Check the chance for current player
+        if self.current_player == 1 and self.black_undo_remaining > 0:
+            self.black_undo_remaining -= 1
+        elif self.current_player == 2 and self.white_undo_remaining > 0:
+            self.white_undo_remaining -= 1
+        else:
+            return
+
+        # Undo two steps
+        for _ in range(2):
+            if not self.history:
+               break
+            x, y, player = self.history.pop()
+            self.board[y][x] = 0  # clear the history for these two steps
+
+        # Redraw the board according to the history
+        self.redraw_board() 
+        self.update_undo_button()
+
+        # Update the timer
+        self.remaining_time = 30
+        self.update_timer_label()
+
+
+    def update_undo_button(self):
+        '''
+        **Function**
+        Update the undo button text and enable/disable status based on remaining chances.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        if self.current_player == 1:
+            self.undo_button.config(text=f"Undo ({self.black_undo_remaining})")
+        else:
+            self.undo_button.config(text=f"Undo ({self.white_undo_remaining})")
+
+        if (self.current_player == 1 and self.black_undo_remaining == 0) or \
+           (self.current_player == 2 and self.white_undo_remaining == 0):
+            self.undo_button.config(state=tk.DISABLED)
+        else:
+            self.undo_button.config(state=tk.NORMAL)
+
+    def redraw_board(self):
+        '''
+        **Function**
+        Redraw the entire board based on the current game state.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.canvas.delete("all")
+        self.draw_board()
+
+        # Draw disabled cells (mines)
+        for x, y in self.disabled_cells:
+           self.canvas.create_text(
+            x * self.cell_size + self.cell_size // 2,
+            y * self.cell_size + self.cell_size // 2,
+            text="X",
+            font=("Arial", 16, "bold"),
+            fill="red"
+           )
+
+
+        for x, y, player in self.history:
+            color = "black" if player == 1 else "white"
+            self.canvas.create_oval(
+                x * self.cell_size + 5,
+                y * self.cell_size + 5,
+                (x + 1) * self.cell_size - 5,
+                (y + 1) * self.cell_size - 5,
+                fill=color,
+            )
+
+    def draw_button(self):
+        '''
+        **Function**
+        Draw the game and go to the ending page.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.canvas.unbind("<Button-1>")  # Disable further clicks
+        self.clear_screen()
+
+        # Display "Draw" message
+        draw_label = tk.Label(self, text="Game Over - Draw!", font=("Arial", 32, "bold"), fg="blue")
+        draw_label.pack(pady=50)
+
+        # Show the board at the end
+        self.canvas = tk.Canvas(
+           self, width=self.board_size * self.cell_size, height=self.board_size * self.cell_size, bg="burlywood"
+        )
+        self.canvas.pack()
+        self.redraw_board()
+
+        self.continue_button(command=self.Ending_page, x=225, y=-20)
+
+    def update_timer(self):
+        '''
+        **Function**
+        Decrease the timer and check if a player has run out of time.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.update_timer_label()
+            self.after(1000, self.update_timer)
+        else:
+            winner = self.player_white if self.current_player == 1 else self.player_black
+            self.display_winner(f"{winner} wins by timeout!")
+
+    def update_timer_label(self):
+        '''
+        **Function**
+        Update the timer label to show the current player's remaining time.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        player = self.player_black if self.current_player == 1 else self.player_white
+        self.timer_label.config(text=f"{player}'s time left: {self.remaining_time}s")
+
+    # Game over and winner display settings (Page 5)
+    def display_winner(self, message):
+        '''
+        **Function**
+        Display the winner and redraw the board for the game end screen.
+
+        **Parameters**
+        message (str): The message to display (e.g., "Game Over! Player X wins!")
+
+        **Returns**
+        None
+        '''
+        self.canvas.unbind("<Button-1>")
+        self.clear_screen()
+        winner = self.player_black if self.current_player == 1 else self.player_white
+        self.scores[winner] += 1
+
+        winner_label = tk.Label(self, text=message, font=("Arial", 32, "bold"), fg="red")
+        winner_label.pack(pady=50)
+
+        self.canvas = tk.Canvas(self,width=self.board_size * self.cell_size,height=self.board_size * self.cell_size,bg="burlywood"
+        )
+        self.canvas.pack()
+        self.redraw_board() 
+
+        self.continue_button(command=self.Ending_page, x=225,y=-20)
+
+        
+    # Ending page (Page 6)
+    def Ending_page(self):
+        '''
+        **Function**
+        Display the ending page with the current scores and options to restart or quit.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.canvas.unbind("<Button-1>")
+        self.clear_screen()
+        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
+        self.canvas.pack()
+
+        score_text = f"""
+        Scores:
+        {self.player_black}: {self.scores.get(self.player_black, 0)}
+        {self.player_white}: {self.scores.get(self.player_white, 0)}
+        """
+        self.canvas.create_text(225, 250, text=score_text, font=("Arial", 18), fill="black",justify='center')
+
+        restart_button = tk.Button(
+            self, text="Restart", font=("Arial", 16), command=self.restart_game
+        )
+        self.canvas.create_window(250, 400, window=restart_button)
+
+        quit_button = tk.Button(
+            self, text="Quit", font=("Arial", 16), command=self.quit
+        )
+        self.canvas.create_window(350, 400, window=quit_button)
+    
+
+    def restart_game(self):
+        '''
+        **Function**
+        Restart the game with swapped player roles (black/white).
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+        self.player_black, self.player_white = self.player_white, self.player_black
+        self.board = [[0] * self.board_size for _ in range(self.board_size)]
+        self.current_player = 1
+        self.remaining_time = 30
+        self.start_game()
+
+    def continue_button(self, command, x=300, y=450):
+        '''
+        **Function**
+        Create a "Continue" button at a specified position and can custom the command.
+
+        **Parameters**
+        command (function): The function to execute when the button is clicked.
+        x (int): The x-coordinate of the button (default: 300).
+        y (int): The y-coordinate of the button (default: 450).
+
+        **Returns**
+        None
+        '''
+        continue_button = tk.Button(self, text="Continue", font=("Arial", 16), bg="white", command=command)
+        self.canvas.create_window(x, y, window=continue_button)
+
+    # Winner checking function
+    def count_in_one_direction(self, x, y, dx, dy):
+        '''
+        **Function**
+        Count consecutive pieces of the current player in a given direction.
+
+        **Parameters**
+        x (int): The starting x-coordinate.
+        y (int): The starting y-coordinate.
+        dx (int): The step in the x-direction.
+        dy (int): The step in the y-direction.
+
+        **Returns**
+        int: The count of consecutive pieces in the given direction.
+        '''
+        count = 0
+        while (
+            0 <= x < self.board_size
+            and 0 <= y < self.board_size
+            and self.board[y][x] == self.current_player
+        ):
+            count += 1
+            x += dx
+            y += dy
+        return count
+
+    def check_winner(self, x, y):
+        '''
+        **Function**
+        Check if the current player has achieved 5 pieces in a row.
+
+        **Parameters**
+        x (int): The x-coordinate of the last placed piece.
+        y (int): The y-coordinate of the last placed piece.
+
+        **Returns**
+        bool: True if the current player has won, False otherwise.
+        '''
+        directions = [(1, -1), (1, 1), (1, 0), (0, 1)]
+        for dx, dy in directions:
+            count = 1
+            count += self.count_in_one_direction(x + dx, y + dy, dx, dy)
+            count += self.count_in_one_direction(x - dx, y - dy, -dx, -dy)
+            if count >= 5:
+                return True
+        return False
+
+
+if __name__ == "__main__":
+    game = MineGomokuGame()
+    game.mainloop()
