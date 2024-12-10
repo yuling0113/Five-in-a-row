@@ -1,4 +1,4 @@
-# Gomoku Game
+# MineGomoku Game
 An upgraded Gomoku (Five in a Row) game with mines in the board based on Python and Tkinter commands is displayed with special function including customizable game setting before starting the game, undo option and draw option while playing, and score recording, restart option, and quit option while gameover. This Mine-Gomoku game provides tradition mode of gomoku (number of mines = 0) and orginal mode with cells containing mines where players cannot place pieces and cannot know whether the cell contains mine until it is clicked, which increases the fun of the game.
 
 ## Features
@@ -76,7 +76,7 @@ set_disabled_cells(): Randomly places mines while ensuring valid gameplay.
    
 ## Project Structure
 
-gomoku/
+Minegomoku/
 >src/                     # Source code
 >
 >> Pre-requirements
@@ -126,13 +126,13 @@ gomoku/
 
 ## Main
 
-The GomokuGame class based on Tkinter allows GomokuGame to create and manage the GUI for the game.
+The MineGomokuGame class based on Tkinter allows GomokuGame to create and manage the GUI for the game.
 
-    class GomokuGame(tk.Tk):
+    class MineGomokuGame(tk.Tk):
        def ...
 
     if __name__ == "__main__":
-       game = GomokuGame()
+       game = MineGomokuGame()
        game.mainloop()
        
 ### GUI settings
@@ -150,6 +150,10 @@ The GomokuGame class based on Tkinter allows GomokuGame to create and manage the
         self.distribution_mode = tk.StringVar(value="random")  # Default: random
         self.black_player_choice = tk.StringVar(value="player1")  # Default: Player 1
         self.black_player_choice_frame = None  # Initialize the black choice frame status (showing/hiding)
+
+        # Initialze the mine setting (Disabled cells setup)
+        self.disabled_cells = set()  # Store coordinates of disabled cells
+        self.num_disabled_cells = 0  # Number of disabled cells
 
         # Game history and Undo settings
         self.history = []  # List to store move history [(x, y, player)]
