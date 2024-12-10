@@ -49,43 +49,24 @@ The game will announce the winner once a player meets the win condition.
 ## Project Structure
 
 gomoku/
-
 >src/                     # Source code
-
 >> main.py              # Main game file containing the gameplay logic
-
 >>>GUI settings(): Initialized the game settings, including welcome page, rule page, mode selection and player assignment
-
 >>>game screen():       # Initialized the game settings
-
 >>>>start_game(): Initializes the game screen, resets states, and sets up the board.
-
 >>>>clear_screen(): load a new game interface.
-
 >>>>draw_board(): Draws the grid lines of the board.
-
 >>>>place_piece(): Handles piece placement and updates the game state.
-
 >>>>undo_move(): Implements the undo functionality for both players.
-
 >>>>redraw_board(): Redraws the board based on the current game state.
-
 >>>>update_timer(): Decreases the timer and checks for timeouts.
-
 >>>>update_timer_label(): Updates the GUI label to display the current player's remaining time.
-
 >>>>update_undo_button(): Updates the text and status of the undo button based on remaining chances.
-
 >>>Game Over and Winner Display():
-
 >>>>display_winner(): Displays the winner when the game ends.
-
 >>>>Ending Page (): Displays the final scores of the players. Provides options to restart the game or quit.
-
 >README.md                # Documentation for the project
-
 >requirements.txt        # Dependencies required for the project
-
 
 ## Main
 
