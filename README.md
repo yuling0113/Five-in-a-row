@@ -46,6 +46,30 @@ The game will announce the winner once a player meets the win condition.
     import tkinter as tk
     import random
    
+## Project Structure
+
+gomoku/
+├── src/                     # Source code
+│   ├── main.py              # Main game file containing the gameplay logic
+│   ├── GUI settings(): Initialized the game settings, including welcome    
+│   │                   page, rule page, mode selection and player assignment
+│   ├── game screen():       # Initialized the game settings
+│   │    ├── start_game(): Initializes the game screen, resets states, and sets up the   │   │    │                 board.
+│   │    ├── clear_screen(): load a new game interface.
+│   │    ├── draw_board(): Draws the grid lines of the board.
+│   │    ├── place_piece(): Handles piece placement and updates the game state.
+│   │    ├── undo_move(): Implements the undo functionality for both players.
+│   │    ├── redraw_board(): Redraws the board based on the current game state.
+│   │    ├── update_timer(): Decreases the timer and checks for timeouts.
+│   │    ├── update_timer_label(): Updates the GUI label to display the current player's │   │    │                         remaining time.
+│   │    └── update_undo_button(): Updates the text and status of the undo button based  │   │                               on remaining chances.
+│   └── Game Over and Winner Display():
+│       ├── display_winner(): Displays the winner when the game ends.
+│       ├── Ending Page (): Displays the final scores of the players. Provides options  │                           to restart the game or quit.
+├── README.md                # Documentation for the project
+└──  requirements.txt        # Dependencies required for the project
+
+
 ## Main
 
 The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the GUI for the game.
@@ -62,15 +86,6 @@ The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the G
 #### Initialize the game setting
 
      def __init__(self):
-
-        super().__init__()
-        self.title("Gomoku Game")
-        self.geometry("600x650")
-        self.cell_size = 30
-        self.board_size = 15
-        self.board = [[0] * self.board_size for _ in range(self.board_size)]
-        self.current_player = 1
-        self.remaining_time = 30
 
         # Initialize the player information
         self.player_black = None
@@ -89,6 +104,7 @@ The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the G
 
         # Start with welcome screen
         self.show_welcome_screen()
+
 #### Welcome Page (Page 1)
 
 In Welcome page, "how to play" button and "continue" button was added to the canvas. "how to play" button will go to the Rule Page, while "Continue" button will skip rule page and go to the username input and mode setting page.
@@ -105,21 +121,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
-        self.clear_screen()
-        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightblue")
-        self.canvas.pack()
-        self.canvas.create_text(
-            300, 200, text="Welcome to Gomoku Game", font=("Arial", 24, "bold")
-        )
-
-        # Create button to go to rules page
-        Rules_button = tk.Button(self, text="How to play", font=("Arial", 16), bg="white", command=self.show_rules_screen)
-        self.canvas.create_window(300, 350, window=Rules_button)
-        
-        # Add continue button and set the next page
-        self.continue_button(command=self.show_username_input_screen)
-
-Rule Page display setting, including a "Continue" button that can go to the username input and mode seletion page.
+       
 
     def show_rules_screen(self):
         '''
@@ -132,24 +134,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        self.clear_screen()
-        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
-        self.canvas.pack()
-        rules = """
-        Rules:
-        1. Black goes first, followed by White.
-        2. Players take turns placing a piece.
-        3. Each player has 30 seconds per turn.
-        4. The first player to place 5 consecutive pieces 
-           horizontally, vertically, or diagonally wins.
-        5. Each player has 2 undo chances per game.
-        """
-        self.canvas.create_text(300, 200, text="How to Play", font=("Arial", 24, "bold"))
-        self.canvas.create_text(300, 350, text=rules, font=("Arial", 14), justify="left")
-        
-        # Add the continue button to the page.
-        self.continue_button(command=self.show_username_input_screen)
-
 
 #### Username input and mode selection page (Page 2)
     def show_username_input_screen(self):
@@ -164,82 +148,7 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        self.clear_screen()
-        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightblue")
-        self.canvas.pack()
 
-        # Instructions
-        self.canvas.create_text(330, 100, text="Enter User Names", font=("Arial", 24, "bold"))
-
-        # Player 1 name entry setting
-        tk.Label(self, text="Player 1:", font=("Arial", 16), bg="white").place(x=150, y=150)
-        player1_entry = tk.Entry(self, font=("Arial", 16))
-        player1_entry.place(x=250, y=150)
-
-        # Player 2 name entry setting
-        tk.Label(self, text="Player 2:", font=("Arial", 16)).place(x=150, y=200)
-        player2_entry = tk.Entry(self, font=("Arial", 16))
-        player2_entry.place(x=250, y=200)
-
-        # Distribution mode selection
-        tk.Label(self, text="Distribution Mode:", font=("Arial", 16)).place(x=100, y=250)
-        # "Random": use random function to distribute black and white, hide the black player choice frame
-        tk.Radiobutton(
-            self, text="Random", variable=self.distribution_mode, value="random", font=("Arial", 14),
-            command=self.hide_black_player_choice, bg="lightblue"
-        ).place(x=290, y=250)
-        # "Custom": custom the black and white by players, show the black player choice frame
-        tk.Radiobutton(
-            self, text="Custom", variable=self.distribution_mode, value="custom", font=("Arial", 14),
-            command=self.show_black_player_choice, bg="lightblue"
-        ).place(x=400, y=250)
-
-        # Black player choice (only for custom mode)
-        self.black_player_choice_frame = tk.Frame(self)
-        self.black_player_choice_frame.place(x=100, y=300)
-        tk.Label(self.black_player_choice_frame, text="Choose Black Player:", font=("Arial", 16)).pack(side="left")
-        tk.Radiobutton(
-            self.black_player_choice_frame, text="Player 1", variable=self.black_player_choice, value="player1", font=("Arial", 14)
-        ).pack(side="left")
-        tk.Radiobutton(
-            self.black_player_choice_frame, text="Player 2", variable=self.black_player_choice, value="player2", font=("Arial", 14)
-        ).pack(side="left")
-        self.hide_black_player_choice()  # Initially hide black choice
-
-        # Create Submit button
-        submit_button = tk.Button(
-            self, text="Submit", font=("Arial", 16),
-            command=lambda: self.assign_players(player1_entry.get(), player2_entry.get())
-        )
-        submit_button.place(x=250, y=450)
-
-    def hide_black_player_choice(self):
-        '''
-        **Function**
-        Hide the black player choice frame.
-
-        **Parameters**
-        None
-
-        **Returns**
-        None
-        '''
-        if self.black_player_choice_frame:
-            self.black_player_choice_frame.place_forget()
-
-    def show_black_player_choice(self):
-        '''
-        **Function**
-        Show the black player choice frame.
-
-        **Parameters**
-        None
-
-        **Returns**
-        None
-        '''
-        if self.black_player_choice_frame:
-            self.black_player_choice_frame.place(x=100, y=300)
 #### Player assignment result page (Page 3)
     def assign_players(self, player1, player2):
         '''
@@ -253,48 +162,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        if not player1 or not player2:
-            return
-
-        if self.distribution_mode.get() == "random":
-            if random.choice([True, False]):
-                self.player_black, self.player_white = player1, player2
-            else:
-                self.player_black, self.player_white = player2, player1
-       
-        elif self.distribution_mode.get() == "custom":
-            if self.black_player_choice.get() == "player1":
-                self.player_black, self.player_white = player1, player2
-            elif self.black_player_choice.get() == "player2":
-                self.player_black, self.player_white = player2, player1
-            else:
-                return
-
-        self.scores.setdefault(self.player_black, 0)
-        self.scores.setdefault(self.player_white, 0)
-
-        self.show_player_assignment_result()
-    
-    # player assignment result display setting (Page 3)
-    def show_player_assignment_result(self):
-        '''
-        **Function**
-        Show the result of the player assignment.
-
-        **Parameters**
-        None
-
-        **Returns**
-        None
-        '''
-        self.clear_screen()
-        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
-        self.canvas.pack()
-        Results = f"Black: {self.player_black}\nWhite: {self.player_white}"
-        self.canvas.create_text(300, 200, text="Player Distribution", font=("Arial", 24, "bold"))
-        self.canvas.create_text(300, 250, text=Results, font=("Arial", 20))
-        self.continue_button(command=self.start_game)
-
 
 #### Main board display page (Page 4)
 
@@ -347,14 +214,7 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        for i in range(self.board_size):
-            self.canvas.create_line(
-                0, i * self.cell_size, self.board_size * self.cell_size, i * self.cell_size
-            )
-            self.canvas.create_line(
-                i * self.cell_size, 0, i * self.cell_size, self.board_size * self.cell_size
-            )
-
+        
     def place_piece(self, event):
         '''
         **Function**
@@ -367,35 +227,15 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        x, y = event.x // self.cell_size, event.y // self.cell_size
-        if x >= self.board_size or y >= self.board_size or self.board[y][x] != 0:
-            return
-
-        self.board[y][x] = self.current_player
-        color = "black" if self.current_player == 1 else "white"
-        self.canvas.create_oval(
-            x * self.cell_size + 5,
-            y * self.cell_size + 5,
-            (x + 1) * self.cell_size - 5,
-            (y + 1) * self.cell_size - 5,
-            fill=color,
-        )
-
+        
         # Record the history of player actions
-        self.history.append((x, y, self.current_player))
 
         # Check if there are five pieces in a row every time
-        if self.check_winner(x, y):
-            winner = self.player_black if self.current_player == 1 else self.player_white
-            self.display_winner(f"Game Over! {winner} wins!")
-            return
 
         # Swap the player
-        self.current_player = 3 - self.current_player
         
         # Set the remaining time per turn
         self.remaining_time = 30
-        
         self.update_timer_label()
         self.update_undo_button()
 
@@ -412,54 +252,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         None
         '''
         # if there are not 2 steps in history, undo button cannot work
-        if len(self.history) < 2:
-           return
-
-        # Check the chance for current player
-        if self.current_player == 1 and self.black_undo_remaining > 0:
-            self.black_undo_remaining -= 1
-        elif self.current_player == 2 and self.white_undo_remaining > 0:
-            self.white_undo_remaining -= 1
-        else:
-            return
-
-        # Undo two steps
-        for _ in range(2):
-            if not self.history:
-               break
-            x, y, player = self.history.pop()
-            self.board[y][x] = 0  # clear the history for these two steps
-
-        # Redraw the board according to the history
-        self.redraw_board() 
-        self.update_undo_button()
-
-        # Update the timer
-        self.remaining_time = 30
-        self.update_timer_label()
-
-
-    def update_undo_button(self):
-        '''
-        **Function**
-        Update the undo button text and enable/disable status based on remaining chances.
-
-        **Parameters**
-        None
-
-        **Returns**
-        None
-        '''
-        if self.current_player == 1:
-            self.undo_button.config(text=f"Undo ({self.black_undo_remaining})")
-        else:
-            self.undo_button.config(text=f"Undo ({self.white_undo_remaining})")
-
-        if (self.current_player == 1 and self.black_undo_remaining == 0) or \
-           (self.current_player == 2 and self.white_undo_remaining == 0):
-            self.undo_button.config(state=tk.DISABLED)
-        else:
-            self.undo_button.config(state=tk.NORMAL)
 
     def redraw_board(self):
         '''
@@ -472,17 +264,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        self.canvas.delete("all")
-        self.draw_board()
-        for x, y, player in self.history:
-            color = "black" if player == 1 else "white"
-            self.canvas.create_oval(
-                x * self.cell_size + 5,
-                y * self.cell_size + 5,
-                (x + 1) * self.cell_size - 5,
-                (y + 1) * self.cell_size - 5,
-                fill=color,
-            )
 
     def update_timer(self):
         '''
@@ -495,13 +276,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        if self.remaining_time > 0:
-            self.remaining_time -= 1
-            self.update_timer_label()
-            self.after(1000, self.update_timer)
-        else:
-            winner = self.player_white if self.current_player == 1 else self.player_black
-            self.display_winner(f"{winner} wins by timeout!")
 
     def update_timer_label(self):
         '''
@@ -514,8 +288,6 @@ Rule Page display setting, including a "Continue" button that can go to the user
         **Returns**
         None
         '''
-        player = self.player_black if self.current_player == 1 else self.player_white
-        self.timer_label.config(text=f"{player}'s time left: {self.remaining_time}s")
 
 Winner detection logic
 
@@ -533,16 +305,6 @@ Winner detection logic
         **Returns**
         int: The count of consecutive pieces in the given direction.
         '''
-        count = 0
-        while (
-            0 <= x < self.board_size
-            and 0 <= y < self.board_size
-            and self.board[y][x] == self.current_player
-        ):
-            count += 1
-            x += dx
-            y += dy
-        return count
 
     def check_winner(self, x, y):
         '''
@@ -556,14 +318,7 @@ Winner detection logic
         **Returns**
         bool: True if the current player has won, False otherwise.
         '''
-        directions = [(1, -1), (1, 1), (1, 0), (0, 1)]
-        for dx, dy in directions:
-            count = 1
-            count += self.count_in_one_direction(x + dx, y + dy, dx, dy)
-            count += self.count_in_one_direction(x - dx, y - dy, -dx, -dy)
-            if count >= 5:
-                return True
-        return False
+       
 #### Gameover page and Ending page settings
 
     def display_winner(self, message):
@@ -577,21 +332,6 @@ Winner detection logic
         **Returns**
         None
         '''
-        self.canvas.unbind("<Button-1>")
-        self.clear_screen()
-        winner = self.player_black if self.current_player == 1 else self.player_white
-        self.scores[winner] += 1
-
-        winner_label = tk.Label(self, text=message, font=("Arial", 32, "bold"), fg="red")
-        winner_label.pack(pady=50)
-
-        self.canvas = tk.Canvas(self,width=self.board_size * self.cell_size,height=self.board_size * self.cell_size,bg="burlywood"
-        )
-        self.canvas.pack()
-        self.redraw_board() 
-
-        self.continue_button(command=self.Ending_page, x=225,y=-20)
-
         
     # Ending page (Page 6)
     def Ending_page(self):
@@ -605,29 +345,6 @@ Winner detection logic
         **Returns**
         None
         '''
-        self.canvas.unbind("<Button-1>")
-        self.clear_screen()
-        self.canvas = tk.Canvas(self, width=600, height=650, bg="lightyellow")
-        self.canvas.pack()
-
-        score_text = f"""
-        Scores:
-        {self.player_black}: {self.scores[self.player_black]}
-        {self.player_white}: {self.scores[self.player_white]}
-        """
-        score_label = tk.Label(self, text=score_text, font=("Arial", 24,"bold"), bg="white")
-        score_label.pack(pady=10)
-
-        restart_button = tk.Button(
-            self, text="Restart", font=("Arial", 16), command=self.restart_game
-        )
-        restart_button.pack(pady=10)
-
-        quit_button = tk.Button(
-            self, text="Quit", font=("Arial", 16), command=self.quit
-        )
-        quit_button.pack(pady=10)
-    
 
     def restart_game(self):
         '''
@@ -640,11 +357,7 @@ Winner detection logic
         **Returns**
         None
         '''
-        self.player_black, self.player_white = self.player_white, self.player_black
-        self.board = [[0] * self.board_size for _ in range(self.board_size)]
-        self.current_player = 1
-        self.remaining_time = 30
-        self.start_game()
+       
 #### Supportive function
 
 def clear_screen()
