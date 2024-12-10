@@ -650,4 +650,15 @@ Winner detection logic
 def clear_screen()
 def continue_button()
 
+## Future improvements
+
+Add an AI opponent for single-player mode.
+Implement saving and loading game states.
+Enhance the graphical interface with more visual effects.
+Include more advanced move analysis and hints for players.
+
+## License
+
+This project is free to use and modify
+
 
