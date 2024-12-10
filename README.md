@@ -39,7 +39,7 @@ Use the "Draw" button to draw the game without scoring.
 
 The game will announce the winner once a player meets the win condition.
 
-Use the "Restart" button to swap players and restart the game.
+Use the "Restart" button to swap players and restart the game. Besides. the distribution of the mines would be reproduced.
 
 ## Game Logic
 
@@ -109,7 +109,7 @@ Minegomoku/
 >>>> 
 >>>Playingboard Screen and logic function:
 >>>
->>>>start_game(): Initializes the game screen, resets states, and sets up the board.
+>>>>start_game(): Initializes the game screen, resets states (Timer, Undo times, and Distribution of mines), and sets up the board.
 >>>>
 >>>>draw_board(): Draws the grid lines of the board.
 >>>>
@@ -292,7 +292,18 @@ In Welcome page, "how to play" button and "continue" button was added to the can
     def start_game(self):
         '''
         **Function**
-        Start the main game screen, resetting all game states and timers.
+        Start the main game screen, resetting all game states (timers, undo times, distribution of mines).
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+    def set_disabled_cells(self):
+        '''
+        **Function**
+        Randomly set the disabled cells on the board, ensuring there are at least 5 consecutive empty spaces available.
 
         **Parameters**
         None
