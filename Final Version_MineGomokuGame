@@ -395,7 +395,7 @@ class MineGomokuGame(tk.Tk):
 
         # “Draw”
         self.draw_button = tk.Button(
-            self, text="Draw", font=("Arial", 16), command=self.draw_button, bg="white"
+            self, text="Draw", font=("Arial", 16), command=self.draw, bg="white"
         )
         self.draw_button.pack(pady=10)
 
@@ -597,7 +597,7 @@ class MineGomokuGame(tk.Tk):
                 fill=color,
             )
 
-    def draw_button(self):
+    def draw(self):
         '''
         **Function**
         Draw the game and go to the ending page.
@@ -621,7 +621,7 @@ class MineGomokuGame(tk.Tk):
         )
         self.canvas.pack()
         self.redraw_board()
-        
+
         # Draw disabled cells (mines)
         for x, y in self.disabled_cells:
            self.canvas.create_text(
