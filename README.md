@@ -75,8 +75,9 @@ The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the G
         self.show_welcome_screen()
 #### Welcome Page (Page 1)
 
-In Welcome page, "how to play" button and "continue" button was added to the canvas.
-# Welcome screen display settings (Page 1)
+In Welcome page, "how to play" button and "continue" button was added to the canvas. "how to play" button will go to the Rule Page, while "Continue" button will skip rule page and go to the username input and mode setting page.
+
+
     def show_welcome_screen(self):
         '''
         **Function**
@@ -102,7 +103,8 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         # Add continue button and set the next page
         self.continue_button(command=self.show_username_input_screen)
 
-    # Rule Page display setting
+Rule Page display setting, including a "Continue" button that can go to the username input and mode seletion page.
+
     def show_rules_screen(self):
         '''
         **Function**
