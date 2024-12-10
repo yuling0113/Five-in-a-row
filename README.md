@@ -1,20 +1,23 @@
 # Gomoku Game
-An upgraded Gomoku (Five in a Row) game with mines in the board based on Python and Tkinter commands is displayed with special function including customizable game setting before starting the game, undo option and draw option while playing, and score recording, restart option, and quit option while gameover. This Mine-Gomoku game
+An upgraded Gomoku (Five in a Row) game with mines in the board based on Python and Tkinter commands is displayed with special function including customizable game setting before starting the game, undo option and draw option while playing, and score recording, restart option, and quit option while gameover. This Mine-Gomoku game provides tradition mode of gomoku (number of mines = 0) and orginal mode with cells containing mines where players cannot place pieces and cannot know whether the cell contains mine until it is clicked, which increases the fun of the game.
+
 ## Features
 
 **Rule Reading Selection**: Players can choose whether skip the rule reading.
 
-**Customizable Player Names**: Personalize the game experience.
-
-**Customizable black and white pieces player**: Two ways to distribute the black and white parties.
+**Customizable Game Setting**: Personalize the game experience with customizable usernames, provide two ways (Random/Custom) to distribute the black and white parties and provide the customizable number of mines.
 
 **Timed Turns**: Each player has 30s to place piece.
 
 **Undo button**: Each player gets two opportunities to undo their last moves.
 
-**Dynamic Redraw**: Record the action dynamically and can reshow the board based on the history.
+**Draw button**: Players can draw the game immediately without winners.
 
-**Winning Detection**: Automatically identifies the winner.
+**Redraw**: Record the action dynamically and can reshow the board based on the history.
+
+**Redisplay**: The history and all the mines would redisplay when the game is over. 
+
+**Winning Detection**: Automatically identifies the winner if five consecutive pieces in a row are detected.
 
 **Score Tracking**: Able to track the 2 players' scores.
 
@@ -24,15 +27,38 @@ An upgraded Gomoku (Five in a Row) game with mines in the board based on Python 
 
 Launch the program.
 
-Input player names and assign black and white pieces (randomly or manually).
+Input player names, assign black and white pieces (randomly or manually), and set the number of mines.
 
 Take turns clicking on the board to place your pieces.
 
 Try to connect five pieces in a row to win.
 
-Use the "Undo" button if you need to revert your move (limited to 2 per player).
+Use the "Undo" button (Max: 2 times) if you need to revert your move (limited to 2 per player).
+
+Use the "Draw" button to draw the game without scoring.
 
 The game will announce the winner once a player meets the win condition.
+
+Use the "Restart" button to swap players and restart the game.
+
+## Game Logic
+
+**Winner Checking**:
+Check as long as the player place the piece.
+check_winner(): Verifies if a player has achieved five consecutive pieces in four directions (1,0) (-1,0) (1,-1) (-1,1).
+-- count_in_one_direction(): Counts consecutive pieces of the current player in a specified direction.
+
+**Mines distribution**:
+Limit the range of the number of mines in GUI setting and raise error when the input number is outside the range[0,150]. In other functions, use "random" command to distribute the mines and make sure at the beginning of the game, there are at least five consecutive empty spaces.  
+
+Starting from (0, 0), the set_disabled_cells() function randomly assigns mines and validates the distribution using five_consecutive_empty_spaces_exist(), which checks if at least five consecutive empty spaces exist on the board in any of the four directions. This is achieved by iterating through each cell and using count_consecutive_empty() to count consecutive empty spaces in a given direction. If the conditions are not met, the mine distribution is regenerated.
+
+
+set_disabled_cells(): Randomly places mines while ensuring valid gameplay.
+-- five_consecutive_empty_spaces_exist(): Checks if there are at least five consecutive empty spaces.
+-- count_consecutive_empty(): Verifies the number of consecutive empty cells in a direction.
+
+**Undo button**：When undo_move() is triggered, it checks if at least two moves exist in the history and deducts one undo chance from the current player. The last two moves are removed, the board is updated, and redraw_board() is called to reflect the changes. The timer resets to 30 seconds for the current player, and the undo button updates to reflect the remaining chances or becomes disabled if no chances remain.
 
 
 ## Prerequisites
@@ -41,9 +67,12 @@ The game will announce the winner once a player meets the win condition.
 
 **Tkinter**: Library for creating graphical user interfaces (GUIs). In this project, it is very important for the canvas display.
 
+**tkinter.messagebox**: Library for showing error messages while using tkinter to realize GUIs.
+
 **Random**: Library for creating the random choice. It would be used when distribute the black and white pieces players.
 
     import tkinter as tk
+    import tkinter.messagebox as messagebox
     import random
    
 ## Project Structure
@@ -53,27 +82,35 @@ gomoku/
 >
 >> main.py                # Main game file containing the gameplay logic
 >> 
->>>GUI settings(): Initialized the game settings, including welcome page, rule page, mode selection and player assignment
+>>>GUI settings(): Initialized the game settings, including welcome page, rule page, game setting page, winner/draw page, and ending page
+>>>>
+>>>>show_welcome_screen(): Displays the welcome page with a "Continue" button.
+>>>>
+>>>>show_rules_screen(): Displays the game rules.
+>>>>
+>>>>show_username_input_screen(): Displays settings for username input, player assignment, and mine customization.
+>>>>
+>>>>show_player_assignment_result(): Displays the assigned player roles (Black/White).
+>>>>
+>>>> Ending_page(): Displays the ending page with final scores and options to restart or quit.
+>>>>
+>>>> Others: continue_button()&clear_screen()
 >>>
->>>game screen(): Initialized the game settings
+>>>Game Screen:
 >>>
 >>>>start_game(): Initializes the game screen, resets states, and sets up the board.
 >>>>
->>>>clear_screen(): load a new game interface.
->>>>
 >>>>draw_board(): Draws the grid lines of the board.
 >>>>
->>>>place_piece(): Handles piece placement and updates the game state.
+>>>>place_piece(): Handles piece placement, record the current steps and updates the game state.
 >>>>
->>>>undo_move(): Implements the undo functionality for both players.
+>>>>undo_botton: deletes the last 2 steps and offers opportunity to replace the pieces. Include undo_move()&update_undo_button()
 >>>>
 >>>>redraw_board(): Redraws the board based on the current game state.
 >>>>
->>>>update_timer(): Decreases the timer and checks for timeouts.
+>>>>update timer: Display the decrease in time for current player. update_timer(): Decreases the timer and checks for timeouts & update_timer_label(): display the current player's name
 >>>>
->>>>update_timer_label(): Updates the GUI label to display the current player's remaining time.
->>>>
->>>>update_undo_button(): Updates the text and status of the undo button based on remaining chances.
+>>>>draw_button(): Draw the game quickly without winners.
 >>>>
 >>>Game Over and Winner Display():
 >>>
@@ -156,7 +193,7 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         '''
         **Function**
         Display the username input screen and game settings, 
-        including username input and black and white pieces player distrbution selection (Random/Custom)
+        including username input, black and white pieces player distrbution selection (Random/Custom), and number of mines setting
 
         **Parameters**
         None
@@ -251,6 +288,17 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
+    def draw_button(self):
+        '''
+        **Function**
+        Draw the game and go to the ending page.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
 
     def update_timer(self):
         '''
@@ -306,7 +354,7 @@ Winner detection logic
         bool: True if the current player has won, False otherwise.
         '''
        
-#### Gameover page and Ending page settings
+#### Gameover page， Draw page and Ending page settings
 
     def display_winner(self, message):
         '''
@@ -320,7 +368,18 @@ Winner detection logic
         None
         '''
         
-    # Ending page (Page 6)
+    def draw_button(self):
+        '''
+        **Function**
+        Draw the game and go to the ending page.
+
+        **Parameters**
+        None
+
+        **Returns**
+        None
+        '''
+    
     def Ending_page(self):
         '''
         **Function**
@@ -349,6 +408,7 @@ Winner detection logic
 
 def clear_screen()
 def continue_button()
+……
 
 ## Future improvements
 
