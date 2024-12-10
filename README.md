@@ -28,7 +28,7 @@ A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is di
 **Random**: Library for creating the random choice. It would be used when distribute the black and white pieces players.
 
    import tkinter as tk
-   import 
+   import random
    
 ## Main
 
