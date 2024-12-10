@@ -48,7 +48,7 @@ The game will announce the winner once a player meets the win condition.
    
 ## Main
 
-The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the GUI for the game.
+The GomokuGame class based on Tkinter allows GomokuGame to create and manage the GUI for the game.
 
     class GomokuGame(tk.Tk):
        def ...
