@@ -26,23 +26,26 @@ A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is di
 **Tkinter**: Library for creating graphical user interfaces (GUIs). In this project, it is very important for the canvas display.
 
 **Random**: Library for creating the random choice. It would be used when distribute the black and white pieces players.
-import tkinter as tk
-import random
+
+   import tkinter as tk
+   import 
+   
 ## Main
 
 The GomokuGame class based on tk.Tk allows GomokuGame to create and manage the GUI for the game.
 
-class GomokuGame(tk.Tk):
-    def ...
+    class GomokuGame(tk.Tk):
+       def ...
 
-if __name__ == "__main__":
-    game = GomokuGame()
-    game.mainloop()
+    if __name__ == "__main__":
+       game = GomokuGame()
+       game.mainloop()
+       
 ### GUI settings
 
 #### Initialize the game setting
 
-def __init__(self):
+     def __init__(self):
 
         super().__init__()
         self.title("Gomoku Game")
