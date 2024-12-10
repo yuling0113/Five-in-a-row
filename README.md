@@ -50,52 +50,41 @@ The game will announce the winner once a player meets the win condition.
 
 gomoku/
 
+>src/                     # Source code
 
-├── src/                     # Source code
+>> main.py              # Main game file containing the gameplay logic
 
-│   ├── main.py              # Main game file containing the gameplay logic
+>>>GUI settings(): Initialized the game settings, including welcome page, rule page, mode selection and player assignment
 
-│   ├── GUI settings(): Initialized the game settings, including welcome
+>>>game screen():       # Initialized the game settings
 
-│   │                   page, rule page, mode selection and player assignment
+>>>>start_game(): Initializes the game screen, resets states, and sets up the board.
 
-│   ├── game screen():       # Initialized the game settings
+>>>>clear_screen(): load a new game interface.
 
-│   │    ├── start_game(): Initializes the game screen, resets states, and sets up the
+>>>>draw_board(): Draws the grid lines of the board.
 
-│   │    │                 board.
+>>>>place_piece(): Handles piece placement and updates the game state.
 
-│   │    ├── clear_screen(): load a new game interface.
+>>>>undo_move(): Implements the undo functionality for both players.
 
-│   │    ├── draw_board(): Draws the grid lines of the board.
+>>>>redraw_board(): Redraws the board based on the current game state.
 
-│   │    ├── place_piece(): Handles piece placement and updates the game state.
+>>>>update_timer(): Decreases the timer and checks for timeouts.
 
-│   │    ├── undo_move(): Implements the undo functionality for both players.
+>>>>update_timer_label(): Updates the GUI label to display the current player's remaining time.
 
-│   │    ├── redraw_board(): Redraws the board based on the current game state.
+>>>>update_undo_button(): Updates the text and status of the undo button based on remaining chances.
 
-│   │    ├── update_timer(): Decreases the timer and checks for timeouts.
+>>>Game Over and Winner Display():
 
-│   │    ├── update_timer_label(): Updates the GUI label to display the current player's
+>>>>display_winner(): Displays the winner when the game ends.
 
-│   │    │                         remaining time.
+>>>>Ending Page (): Displays the final scores of the players. Provides options to restart the game or quit.
 
-│   │    └── update_undo_button(): Updates the text and status of the undo button based
+>README.md                # Documentation for the project
 
-│   │                               on remaining chances.
-
-│   └── Game Over and Winner Display():
-
-│       ├── display_winner(): Displays the winner when the game ends.
-
-│       ├── Ending Page (): Displays the final scores of the players. Provides options
-
-│                           to restart the game or quit.
-
-├── README.md                # Documentation for the project
-
-└──  requirements.txt        # Dependencies required for the project
+>requirements.txt        # Dependencies required for the project
 
 
 ## Main
