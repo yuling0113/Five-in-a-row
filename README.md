@@ -25,7 +25,7 @@ An upgraded Gomoku (Five in a Row) game with mines in the board based on Python 
 
 ## How to play
 
-Launch the program.
+Run the "Final Version_MineGomokuGame" to launch the program.
 
 Input player names, assign black and white pieces (randomly or manually), and set the number of mines.
 
@@ -53,12 +53,11 @@ Limit the range of the number of mines in GUI setting and raise error when the i
 
 Starting from (0, 0), the set_disabled_cells() function randomly assigns mines and validates the distribution using five_consecutive_empty_spaces_exist(), which checks if at least five consecutive empty spaces exist on the board in any of the four directions. This is achieved by iterating through each cell and using count_consecutive_empty() to count consecutive empty spaces in a given direction. If the conditions are not met, the mine distribution is regenerated.
 
-
 set_disabled_cells(): Randomly places mines while ensuring valid gameplay.
 -- five_consecutive_empty_spaces_exist(): Checks if there are at least five consecutive empty spaces.
 -- count_consecutive_empty(): Verifies the number of consecutive empty cells in a direction.
 
-**Undo button**：When undo_move() is triggered, it checks if at least two moves exist in the history and deducts one undo chance from the current player. The last two moves are removed, the board is updated, and redraw_board() is called to reflect the changes. The timer resets to 30 seconds for the current player, and the undo button updates to reflect the remaining chances or becomes disabled if no chances remain.
+**Undo button**：When undo_move() is triggered, it checks if at least two moves exist in the history and deducts one undo chance from the current player. The last two moves are removed, the board is updated, and redraw_board() is called to reflect the changes. The timer resets to 30 seconds for the current player, and the undo button updates to reflect the remaining chances or becomes disabled if no chances remain. As players should pay "Undo", the mines would disappear in the screen after clicking "Undo".
 
 
 ## Prerequisites
@@ -80,6 +79,7 @@ set_disabled_cells(): Randomly places mines while ensuring valid gameplay.
 gomoku/
 >src/                     # Source code
 >
+>> Pre-requirements
 >> main.py                # Main game file containing the gameplay logic
 >> 
 >>>GUI settings(): Initialized the game settings, including welcome page, rule page, game setting page, winner/draw page, and ending page
@@ -110,17 +110,18 @@ gomoku/
 >>>>
 >>>>update timer: Display the decrease in time for current player. update_timer(): Decreases the timer and checks for timeouts & update_timer_label(): display the current player's name
 >>>>
->>>>draw_button(): Draw the game quickly without winners.
+>>>>draw_button: Draw the game quickly without winners and display a gameover page and reproduce the board. draw()
 >>>>
 >>>Game Over and Winner Display():
 >>>
->>>>display_winner(): Displays the winner when the game ends.
+>>>>display_winner(): Displays the winner, the history of steps, and all the mines when the game ends
+>>>>
+>>>>draw():Displays Display "Draw", the history of steps, and all the mines when the game ends
 >>>>
 >>>>Ending Page (): Displays the final scores of the players. Provides options to restart the game or quit.
 >>>>
 >README.md                # Documentation for the project
 >
->requirements.txt        # Dependencies required for the project
 >
 
 ## Main
