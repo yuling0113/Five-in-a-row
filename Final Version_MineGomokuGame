@@ -258,15 +258,7 @@ class MineGomokuGame(tk.Tk):
 
         self.show_player_assignment_result()
     
-    '''
-    def set_disabled_cells(self):
-        self.disabled_cells.clear()
-        while len(self.disabled_cells) < self.num_disabled_cells:
-            x = random.randint(0, self.board_size - 1)
-            y = random.randint(0, self.board_size - 1)
-            self.disabled_cells.add((x, y))
-
-    '''
+   
     def set_disabled_cells(self):
         '''
         **Function**
