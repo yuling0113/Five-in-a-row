@@ -20,7 +20,7 @@ A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is di
 
 **Restart Option**: Swap player roles and start a new game.
 
-**How to Play**
+## How to play
 
 Launch the program.
 
