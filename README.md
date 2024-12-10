@@ -176,32 +176,6 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         **Returns**
         None
         '''
-        self.clear_screen()
-        self.history = []
-        self.black_undo_remaining = 2
-        self.white_undo_remaining = 2
-
-        self.undo_button = tk.Button(
-            self, text="Undo", font=("Arial", 16), command=self.undo_move, bg="white"
-        )
-        self.undo_button.pack(pady=10)
-
-        self.timer_label = tk.Label(
-            self, text=f"Black's time left: {self.remaining_time}s", font=("Arial", 16)
-        )
-        self.timer_label.pack()
-
-        self.canvas = tk.Canvas(
-            self,
-            width=self.board_size * self.cell_size,
-            height=self.board_size * self.cell_size,
-            bg="burlywood",
-        )
-        self.canvas.pack()
-        self.canvas.bind("<Button-1>", self.place_piece)
-        self.draw_board()
-        self.update_timer()
-        self.update_undo_button()
 
     def draw_board(self):
         '''
@@ -235,9 +209,6 @@ In Welcome page, "how to play" button and "continue" button was added to the can
         # Swap the player
         
         # Set the remaining time per turn
-        self.remaining_time = 30
-        self.update_timer_label()
-        self.update_undo_button()
 
     # Regret/Undo button
     def undo_move(self):
