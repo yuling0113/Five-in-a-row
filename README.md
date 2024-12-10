@@ -22,12 +22,18 @@ A classic Gomoku (Five in a Row) game based on Python and Tkinter commands is di
 
 **How to Play**
 
-**Launch the program.
-**Input player names and assign black and white pieces (randomly or manually).
-**Take turns clicking on the board to place your pieces.
-**Try to connect five pieces in a row to win.
-**Use the "Undo" button if you need to revert your move (limited to 2 per player).
-**The game will announce the winner once a player meets the win condition.
+Launch the program.
+
+Input player names and assign black and white pieces (randomly or manually).
+
+Take turns clicking on the board to place your pieces.
+
+Try to connect five pieces in a row to win.
+
+Use the "Undo" button if you need to revert your move (limited to 2 per player).
+
+The game will announce the winner once a player meets the win condition.
+
 
 ## Prerequisites
 
